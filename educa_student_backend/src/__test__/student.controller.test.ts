@@ -10,7 +10,11 @@ jest.mock('../models/student', () => {
                 getAllStudents: jest.fn(),
                 getStudentById: jest.fn(),
                 updateStudent: jest.fn(),
-                removeStudent: jest.fn()
+                removeStudent: jest.fn(),
+                studentExistsByEmail: jest.fn(),
+                studentExistsById: jest.fn(),
+                studentExistsByRA: jest.fn(),
+                studentExistsByCpf: jest.fn(),
             }
         })
     }
@@ -47,16 +51,32 @@ describe('StudentController', () => {
 
     describe('create', () => {
         it('should create a new student successfully', async () => {
-            mockRequest.body = mockStudentData;
+            (mockStudent.studentExistsByEmail as jest.Mock).mockResolvedValue(false);
+            (mockStudent.studentExistsById as jest.Mock).mockResolvedValue(false);
+            (mockStudent.studentExistsByRA as jest.Mock).mockResolvedValue(false);
+            (mockStudent.studentExistsByCpf as jest.Mock).mockResolvedValue(false);
             (mockStudent.addStudent as jest.Mock).mockResolvedValue(mockStudentData);
 
-            await studentController.create(
-                mockRequest as Request,
-                mockResponse as Response
-            );
+            mockRequest.body = mockStudentData;
+
+            await studentController.create(mockRequest as Request, mockResponse as Response);
 
             expect(mockResponse.status).toHaveBeenCalledWith(201);
             expect(mockResponse.json).toHaveBeenCalledWith(mockStudentData);
+        });
+
+        it('should return 409 if student already exists', async () => {
+            (mockStudent.studentExistsByEmail as jest.Mock).mockResolvedValue(true);
+            (mockStudent.studentExistsById as jest.Mock).mockResolvedValue(true);
+            (mockStudent.studentExistsByRA as jest.Mock).mockResolvedValue(false);
+            (mockStudent.studentExistsByCpf as jest.Mock).mockResolvedValue(false);
+
+            mockRequest.body = mockStudentData;
+
+            await studentController.create(mockRequest as Request, mockResponse as Response);
+
+            expect(mockResponse.status).toHaveBeenCalledWith(409);
+            expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Student already exists with the provided email, ID, RA or CPF' });
         });
 
         it('should handle error when creating a student fails', async () => {
