@@ -60,7 +60,7 @@ export const validateStudentUpdateData = async (
       const cpfRegex = /^\d{11}$/;
       if (!cpfRegex.test(cpf)) {
         res.status(400).json({
-          message: 'Invalid emailCPF must contain 11 numeric digits',
+          message: 'Invalid CPF must contain 11 numeric digits',
         });
         return;
       }
@@ -81,7 +81,7 @@ export const validateId = async (
 
     if (isNaN(id) || id <= 0) {
       res.status(400).json({
-        message: 'ID inválido',
+        message: 'Invalid ID',
       });
       return;
     }

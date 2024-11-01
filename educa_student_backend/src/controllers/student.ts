@@ -66,7 +66,10 @@ export class StudentController {
     }
   }
 
-  async update(req: Request, res: Response): Promise<Response> {
+  async update(
+    req: Request,
+    res: Response,
+  ): Promise<Response<any, Record<string, any>> | undefined> {
     try {
       const id = Number(req.params.id);
       const studentData: Partial<IStudent> = req.body;
@@ -77,7 +80,9 @@ export class StudentController {
       return res.status(200).json(updatedStudent);
     } catch (error) {
       console.error('Error updating student:', error);
-      return res.status(500).json({ message: 'Could not update student' });
+      if (error instanceof Error) {
+        return res.status(500).json({ message: error.message });
+      }
     }
   }
 

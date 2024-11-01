@@ -135,7 +135,7 @@ describe('Student Validation Middlewares', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        message: 'Invalid emailCPF must contain 11 numeric digits',
+        message: 'Invalid CPF must contain 11 numeric digits',
       });
       expect(mockNext).not.toHaveBeenCalled();
     });
@@ -166,7 +166,7 @@ describe('Student Validation Middlewares', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        message: 'ID inválido',
+        message: 'Invalid ID',
       });
       expect(mockNext).not.toHaveBeenCalled();
     });
@@ -182,7 +182,7 @@ describe('Student Validation Middlewares', () => {
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        message: 'ID inválido',
+        message: 'Invalid ID',
       });
       expect(mockNext).not.toHaveBeenCalled();
     });

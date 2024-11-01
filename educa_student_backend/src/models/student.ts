@@ -59,15 +59,21 @@ export class Student {
 
   async updateStudent(
     id: number,
-    studentData: Partial<IStudent | null>,
+    studentData: Partial<IStudent>,
   ): Promise<Student> {
     const studentRepository = AppDataSource.getRepository(Student);
+    if ('ra' in studentData || 'cpf' in studentData) {
+      throw new Error('Editing the fields ra and cpf is not allowed.');
+    }
+
+    const student = await studentRepository.findOneBy({ id });
+    if (!student) {
+      throw new Error('Student not found');
+    }
     try {
-      const student = await studentRepository.findOneBy({ id });
-      if (!student) {
-        throw new Error('Student not found');
-      }
-      Object.assign(student, studentData);
+      const { ...updatableData } = studentData;
+      Object.assign(student, updatableData);
+
       return await studentRepository.save(student);
     } catch (error) {
       console.error(`Error updating student with id ${id}:`, error);

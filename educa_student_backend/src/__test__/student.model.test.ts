@@ -135,11 +135,29 @@ describe('Student model', () => {
     });
 
     it('should throw an error when a student is not found.', async () => {
-      mockRepository.findOneBy.mockRejectedValue(null);
+      mockRepository.findOneBy.mockResolvedValue(null);
 
       await expect(
         student.updateStudent(mockId, { name: 'any name' }),
-      ).rejects.toThrow(`Could not update student with id ${mockId}`);
+      ).rejects.toThrow('Student not found');
+    });
+
+    it('should throw an error when trying to update ra or cpf fields.', async () => {
+      const updateData: Partial<IStudent> = {
+        ra: 'newRA',
+        cpf: 'newCPF',
+      };
+
+      const existingStudent: Partial<Student> = {
+        id: mockId,
+        ...mockStudentData,
+      };
+
+      mockRepository.findOneBy.mockResolvedValue(existingStudent as Student);
+
+      await expect(student.updateStudent(mockId, updateData)).rejects.toThrow(
+        'Editing the fields ra and cpf is not allowed.',
+      );
     });
   });
   describe('removeStudent', () => {
