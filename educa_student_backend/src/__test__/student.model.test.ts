@@ -145,6 +145,8 @@ describe('Student model', () => {
                 .toThrow(`Could not remove student with id ${mockId}`);
         });
     })
+
+
 })
 
 
