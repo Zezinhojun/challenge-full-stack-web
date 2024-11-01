@@ -14,16 +14,16 @@ export class Student {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
   name?: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 255, unique: true })
   email?: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 20, unique: true })
   ra?: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 11, unique: true })
   cpf?: string;
 
   async addStudent(studentData: IStudent): Promise<Student> {

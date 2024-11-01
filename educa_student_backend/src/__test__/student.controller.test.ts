@@ -1,6 +1,6 @@
-import type { Request, Response } from "express";
-import { StudentController } from "../controllers/student"
-import { Student } from "../models/student";
+import type { Request, Response } from 'express';
+import { StudentController } from '../controllers/student';
+import { Student } from '../models/student';
 
 jest.mock('../models/student', () => {
   return {
@@ -15,41 +15,41 @@ jest.mock('../models/student', () => {
         studentExistsById: jest.fn(),
         studentExistsByRA: jest.fn(),
         studentExistsByCpf: jest.fn(),
-      }
-    })
-  }
-})
+      };
+    }),
+  };
+});
 
 describe('StudentController', () => {
   let studentController: StudentController;
-  let mockRequest: Partial<Request>
+  let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
-  let mockStudent: InstanceType<typeof Student>
+  let mockStudent: InstanceType<typeof Student>;
 
   const mockStudentData = {
     id: 1,
     name: 'Some Name',
     email: 'email@example.com',
     ra: '12345',
-    cpf: '123.456.789-00'
+    cpf: '123.456.789-00',
   };
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    jest.spyOn(console, 'error').mockImplementation(() => { });
-    jest.spyOn(console, 'warn').mockImplementation(() => { });
+    jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    mockStudent = new Student()
+    mockStudent = new Student();
     studentController = new StudentController();
     (studentController as any).studentModel = mockStudent;
 
-    mockRequest = {}
+    mockRequest = {};
     mockResponse = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
-      send: jest.fn()
-    }
-  })
+      send: jest.fn(),
+    };
+  });
 
   describe('create', () => {
     it('should create a new student successfully', async () => {
@@ -61,7 +61,10 @@ describe('StudentController', () => {
 
       mockRequest.body = mockStudentData;
 
-      await studentController.create(mockRequest as Request, mockResponse as Response);
+      await studentController.create(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
 
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith(mockStudentData);
@@ -75,25 +78,35 @@ describe('StudentController', () => {
 
       mockRequest.body = mockStudentData;
 
-      await studentController.create(mockRequest as Request, mockResponse as Response);
+      await studentController.create(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
 
       expect(mockResponse.status).toHaveBeenCalledWith(409);
-      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Student already exists with the provided email, ID, RA or CPF' });
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message:
+          'Student already exists with the provided email, ID, RA or CPF',
+      });
     });
 
     it('should handle error when creating a student fails', async () => {
       mockRequest.body = mockStudentData;
-      (mockStudent.addStudent as jest.Mock).mockRejectedValue(new Error('Error'));
+      (mockStudent.addStudent as jest.Mock).mockRejectedValue(
+        new Error('Error'),
+      );
 
       await studentController.create(
         mockRequest as Request,
-        mockResponse as Response
-      )
+        mockResponse as Response,
+      );
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
-      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Could not create student' })
-    })
-  })
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Could not create student',
+      });
+    });
+  });
 
   describe('findAll', () => {
     it('should return all students successfully', async () => {
@@ -102,39 +115,45 @@ describe('StudentController', () => {
 
       await studentController.findAll(
         mockRequest as Request,
-        mockResponse as Response
-      )
+        mockResponse as Response,
+      );
 
       expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith(mockStudents)
-    })
+      expect(mockResponse.json).toHaveBeenCalledWith(mockStudents);
+    });
 
     it('should handler error when fetching students fails', async () => {
-      (mockStudent.getAllStudents as jest.Mock).mockRejectedValue(new Error('Error'));
+      (mockStudent.getAllStudents as jest.Mock).mockRejectedValue(
+        new Error('Error'),
+      );
 
       await studentController.findAll(
         mockRequest as Request,
-        mockResponse as Response
-      )
+        mockResponse as Response,
+      );
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
-      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Could not fetch students' })
-    })
-  })
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Could not fetch students',
+      });
+    });
+  });
 
   describe('findById', () => {
     it('should return a student by id successfully', async () => {
       mockRequest.params = { id: '1' };
-      (mockStudent.getStudentById as jest.Mock).mockResolvedValue(mockStudentData);
+      (mockStudent.getStudentById as jest.Mock).mockResolvedValue(
+        mockStudentData,
+      );
 
       await studentController.findById(
         mockRequest as Request,
-        mockResponse as Response
-      )
+        mockResponse as Response,
+      );
 
       expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith(mockStudentData)
-    })
+      expect(mockResponse.json).toHaveBeenCalledWith(mockStudentData);
+    });
 
     it('should return 404 when student is not found', async () => {
       mockRequest.params = { id: '999' };
@@ -142,14 +161,15 @@ describe('StudentController', () => {
 
       await studentController.findById(
         mockRequest as Request,
-        mockResponse as Response
-      )
+        mockResponse as Response,
+      );
 
       expect(mockResponse.status).toHaveBeenCalledWith(404);
-      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Student not found' })
-    })
-
-  })
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Student not found',
+      });
+    });
+  });
   describe('update', () => {
     it('should update a student sucessfully', async () => {
       const updateData = { name: 'any name updated' };
@@ -157,17 +177,19 @@ describe('StudentController', () => {
 
       mockRequest.params = { id: '1' };
       mockRequest.body = updateData;
-      (mockStudent.updateStudent as jest.Mock).mockResolvedValue(updatedStudent);
+      (mockStudent.updateStudent as jest.Mock).mockResolvedValue(
+        updatedStudent,
+      );
 
       await studentController.update(
         mockRequest as Request,
-        mockResponse as Response
-      )
+        mockResponse as Response,
+      );
 
-      expect(mockResponse.status).toHaveBeenCalledWith(200)
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith(updatedStudent);
-    })
-  })
+    });
+  });
 
   describe('remove', () => {
     it('should remove a student successfully', async () => {
@@ -176,24 +198,28 @@ describe('StudentController', () => {
 
       await studentController.remove(
         mockRequest as Request,
-        mockResponse as Response
-      )
+        mockResponse as Response,
+      );
 
-      expect(mockResponse.status).toHaveBeenCalledWith(204)
-      expect(mockResponse.send).toHaveBeenCalled()
-    })
+      expect(mockResponse.status).toHaveBeenCalledWith(204);
+      expect(mockResponse.send).toHaveBeenCalled();
+    });
 
     it('should handle error when removing a student fails', async () => {
       mockRequest.params = { id: '1' };
-      (mockStudent.removeStudent as jest.Mock).mockRejectedValue(new Error('Error'));
+      (mockStudent.removeStudent as jest.Mock).mockRejectedValue(
+        new Error('Error'),
+      );
 
       await studentController.remove(
         mockRequest as Request,
-        mockResponse as Response
-      )
+        mockResponse as Response,
+      );
 
       expect(mockResponse.status).toHaveBeenCalledWith(500);
-      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Could not remove student' })
-    })
-  })
-})
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Could not remove student',
+      });
+    });
+  });
+});
