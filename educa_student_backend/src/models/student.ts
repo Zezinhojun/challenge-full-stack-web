@@ -81,4 +81,39 @@ export class Student {
             throw new Error(`Could not remove student with id ${id}`);
         }
     }
+
+    async studentExistsByEmail(email: string): Promise<Student | null> {
+        const studentRepository = AppDataSource.getRepository(Student)
+        try {
+            return await studentRepository.findOne({ where: { email } })
+        } catch (error) {
+            throw new Error('Could not check for student by email');
+        }
+    }
+
+    async studentExistsById(id: number): Promise<Student | null> {
+        try {
+            return await this.getStudentById(id);
+        } catch (error) {
+            throw new Error('Could not check for student by id');
+        }
+    }
+
+    async studentExistsByRA(ra: string): Promise<Student | null> {
+        const studentRepository = AppDataSource.getRepository(Student)
+        try {
+            return await studentRepository.findOne({ where: { ra } })
+        } catch (error) {
+            throw new Error('Could not check for student by ra');
+        }
+    }
+
+    async studentExistsByCpf(cpf: string): Promise<Student | null> {
+        const studentRepository = AppDataSource.getRepository(Student)
+        try {
+            return await studentRepository.findOne({ where: { cpf } })
+        } catch (error) {
+            throw new Error('Could not check for student by CPF');
+        }
+    }
 }

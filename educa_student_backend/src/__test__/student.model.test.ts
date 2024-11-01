@@ -11,7 +11,7 @@ jest.mock("../config/db", () => ({
 
 describe('Student model', () => {
     let student: Student;
-    let mockRepository: jest.Mocked<Pick<Repository<Student>, 'create' | 'save' | 'find' | 'findOneBy' | 'delete'>>;
+    let mockRepository: jest.Mocked<Pick<Repository<Student>, 'create' | 'save' | 'find' | 'findOneBy' | 'delete' | 'findOne'>>;
 
     const mockStudentData: Partial<Student> & IStudent = {
         name: 'Some Name',
@@ -29,6 +29,7 @@ describe('Student model', () => {
             create: jest.fn(),
             save: jest.fn(),
             find: jest.fn(),
+            findOne: jest.fn(),
             findOneBy: jest.fn(),
             delete: jest.fn(),
         }
@@ -38,7 +39,7 @@ describe('Student model', () => {
     })
 
     describe('addStudent', () => {
-        it('deve criar e salvar um novo estudante com sucesso', async () => {
+        it('should create and save a new student successfully.', async () => {
 
             const studentEntity = new Student();
             Object.assign(studentEntity, { ...mockStudentData, id: mockId });
@@ -52,7 +53,7 @@ describe('Student model', () => {
             expect(result).toEqual({ id: mockId, ...mockStudentData })
         })
 
-        it('deve lançar erro quando falhar ao adicionar estudante', async () => {
+        it('should throw an error when failing to add a student', async () => {
             mockRepository.save.mockRejectedValue(new Error('Database error'));
 
             await expect(student.addStudent(mockStudentData))
@@ -62,7 +63,7 @@ describe('Student model', () => {
     })
 
     describe('getAllStudents', () => {
-        it('deve retornar lista de estudantes com sucess', async () => {
+        it('should return a list of students successfully.', async () => {
             const mockStudents: Student[] = [
                 { id: 1, ...mockStudentData },
                 { id: 2, ...mockStudentData, email: 'maria@example.com' }
@@ -76,7 +77,7 @@ describe('Student model', () => {
             expect(result).toEqual(mockStudents)
         })
 
-        it('deve lançar erro quando falhar ao buscar estudantes', async () => {
+        it('should throw an error when failing to fetch students.', async () => {
             mockRepository.find.mockRejectedValue(new Error('Database error'));
 
             await expect(student.getAllStudents())
@@ -86,7 +87,7 @@ describe('Student model', () => {
     })
 
     describe('getStudentById', () => {
-        it('deve retornar um estudante específico com sucesso', async () => {
+        it('should return a specific student successfully.', async () => {
             const mockStudent: Partial<Student> = { id: mockId, ...mockStudentData }
             mockRepository.findOneBy.mockResolvedValue(mockStudent as Student)
 
@@ -96,7 +97,7 @@ describe('Student model', () => {
             expect(result).toEqual(mockStudent)
         })
 
-        it('deve lancar erro quando falhar ao buscar estudate por id', async () => {
+        it('should return null when failing to fetch a student by id.', async () => {
             mockRepository.findOneBy.mockResolvedValue(null);
 
             const result = await student.getStudentById(999)
@@ -104,7 +105,7 @@ describe('Student model', () => {
         })
     })
     describe('updateStudent', () => {
-        it('deve atualizar um estudante com sucess', async () => {
+        it('should update a student successfully.', async () => {
             const updateData = { name: 'some name updated' };
             const existingStudent: Partial<Student> = { id: mockId, ...mockStudentData }
             const updatedStudent: Partial<Student> = { ...existingStudent, ...updateData };
@@ -119,7 +120,7 @@ describe('Student model', () => {
             expect(result).toEqual(updatedStudent)
         })
 
-        it('deve lançar erro quando estudante não for encontrado', async () => {
+        it('should throw an error when a student is not found.', async () => {
             mockRepository.findOneBy.mockRejectedValue(null)
 
             await expect(student.updateStudent(mockId, { name: 'any name' }))
@@ -128,7 +129,7 @@ describe('Student model', () => {
         })
     })
     describe('removeStudent', () => {
-        it('deve remover um estudante com sucess', async () => {
+        it('should remove a student successfully.', async () => {
             const deleteResult: DeleteResult = { affected: 1, raw: {} }
             mockRepository.delete.mockResolvedValue(deleteResult);
 
@@ -136,7 +137,7 @@ describe('Student model', () => {
             expect(mockRepository.delete).toHaveBeenCalledWith(mockId)
         })
 
-        it('deve lançar erro quando falhar ao remover estudante', async () => {
+        it('should throw an error when failing to remove a student.', async () => {
 
             mockRepository.delete.mockRejectedValue(new Error('Database error'));
 
@@ -145,6 +146,116 @@ describe('Student model', () => {
                 .toThrow(`Could not remove student with id ${mockId}`);
         });
     })
+
+    describe('studentExistsByEmail', () => {
+        it('should return a student if exists by email.', async () => {
+            mockRepository.findOne.mockResolvedValue(mockStudentData as Student);
+
+            const result = await student.studentExistsByEmail(mockStudentData.email);
+
+            expect(mockRepository.findOne).toHaveBeenCalledWith({ where: { email: mockStudentData.email } });
+            expect(result).toEqual(mockStudentData);
+        });
+
+        it('should return null if does not exist by email.', async () => {
+            mockRepository.findOne.mockResolvedValue(null);
+
+            const result = await student.studentExistsByEmail(mockStudentData.email);
+
+            expect(result).toBeNull();
+        });
+
+        it('should throw an error when failing to check for a student by email.', async () => {
+            mockRepository.findOne.mockRejectedValue(new Error('Database error'));
+
+            await expect(student.studentExistsByEmail(mockStudentData.email))
+                .rejects
+                .toThrow('Could not check for student by email');
+        });
+    });
+
+    describe('studentExistsById', () => {
+        it('should return a student if exists by id.', async () => {
+            const mockId = 4;
+            const mockStudentData = { id: mockId, name: 'Test Student' };
+            mockRepository.findOneBy.mockResolvedValue(mockStudentData as Student);
+
+            const result = await student.studentExistsById(mockId);
+
+            expect(mockRepository.findOneBy).toHaveBeenCalledWith({ id: mockId });
+            expect(result).toEqual(mockStudentData);
+        });
+
+        it('should return null if does not exist by id.', async () => {
+            const mockId = 4;
+            mockRepository.findOneBy.mockResolvedValue(null);
+
+            const result = await student.studentExistsById(mockId);
+
+            expect(result).toBeNull();
+        });
+
+        it('should throw an error when failing to check for a student by id.', async () => {
+            const mockId = 4;
+            mockRepository.findOneBy.mockRejectedValue(new Error('Database error'));
+
+            await expect(student.studentExistsById(mockId)).rejects.toThrow('Could not check for student by id');
+        });
+    });
+
+    describe('studentExistsByRA', () => {
+        it('should return a student if exists by RA.', async () => {
+            mockRepository.findOne.mockResolvedValue(mockStudentData as Student);
+
+            const result = await student.studentExistsByRA(mockStudentData.ra);
+
+            expect(mockRepository.findOne).toHaveBeenCalledWith({ where: { ra: mockStudentData.ra } });
+            expect(result).toEqual(mockStudentData);
+        });
+
+        it('should return null if does not exist by RA.', async () => {
+            mockRepository.findOne.mockResolvedValue(null);
+
+            const result = await student.studentExistsByRA(mockStudentData.ra);
+
+            expect(result).toBeNull();
+        });
+
+        it('should throw an error when failing to check for a student by RA.', async () => {
+            mockRepository.findOne.mockRejectedValue(new Error('Database error'));
+
+            await expect(student.studentExistsByRA(mockStudentData.ra))
+                .rejects
+                .toThrow('Could not check for student by ra');
+        });
+    });
+
+    describe('studentExistsByCpf', () => {
+        it('should return a student if exists by CPF.', async () => {
+            mockRepository.findOne.mockResolvedValue(mockStudentData as Student);
+
+            const result = await student.studentExistsByCpf(mockStudentData.cpf);
+
+            expect(mockRepository.findOne).toHaveBeenCalledWith({ where: { cpf: mockStudentData.cpf } });
+            expect(result).toEqual(mockStudentData);
+        });
+
+        it('should return null if does not exist by CPF.', async () => {
+            mockRepository.findOne.mockResolvedValue(null);
+
+            const result = await student.studentExistsByCpf(mockStudentData.cpf);
+
+            expect(result).toBeNull();
+        });
+
+        it('should throw an error when failing to check for a student by CPF.', async () => {
+            mockRepository.findOne.mockRejectedValue(new Error('Database error'));
+
+            await expect(student.studentExistsByCpf(mockStudentData.cpf))
+                .rejects
+                .toThrow('Could not check for student by CPF');
+        });
+    });
 })
 
 
