@@ -12,6 +12,14 @@ export class StudentController {
     async create(req: Request, res: Response): Promise<Response> {
         try {
             const studentData: IStudent = req.body;
+            const existingStudentByEmail = await this.studentModel.studentExistsByEmail(studentData.email);
+            const existingStudentById = await this.studentModel.studentExistsById(Number(studentData.id));
+            const existingStudentByRA = await this.studentModel.studentExistsByRA(studentData.ra);
+            const existingStudentByCpf = await this.studentModel.studentExistsByRA(studentData.cpf);
+
+            if (existingStudentByEmail ?? existingStudentById ?? existingStudentByRA ?? existingStudentByCpf) {
+                return res.status(409).json({ message: 'Student already exists with the provided email, ID, RA or CPF' });
+            }
             const newStudent = await this.studentModel.addStudent(studentData)
             return res.status(201).json(newStudent);
         } catch (error) {
