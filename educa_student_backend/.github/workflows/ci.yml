@@ -1,36 +1,27 @@
-name: CI
-
-on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+name: ci
+on: [pull_request]
 
 jobs:
-  lint-and-test:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 20.x
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run ESLint
+      - name: Linting
         run: npm run lint
 
-      - name: Run Prettier
-        run: npm run format -- --check
+      - name: Testing
+        run: npm run test
 
-      - name: Run tests
-        run: npm test
+      - name: Build
+        run: npm run build
