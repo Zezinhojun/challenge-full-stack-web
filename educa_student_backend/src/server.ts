@@ -1,6 +1,7 @@
 import express, { json } from "express"
 import cors from 'cors'
 import { connectDB } from "./config/db"
+import "reflect-metadata";
 
 // app config
 const app = express()
