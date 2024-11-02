@@ -26,12 +26,10 @@ export class StudentController {
         existingStudentByRA ??
         existingStudentByCpf
       ) {
-        return res
-          .status(409)
-          .json({
-            message:
-              'Student already exists with the provided email, ID, RA or CPF',
-          });
+        return res.status(409).json({
+          message:
+            'Student already exists with the provided email, ID, RA or CPF',
+        });
       }
       const newStudent = await this.studentModel.addStudent(studentData);
       return res.status(201).json(newStudent);

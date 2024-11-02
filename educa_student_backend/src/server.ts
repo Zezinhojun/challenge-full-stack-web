@@ -5,6 +5,7 @@ import cors from 'cors';
 import { connectDB } from './config/db';
 import { StudentRoutes } from './routes/student';
 import { errorHandler } from './middlewares/errorHandler';
+import { UserRoutes } from './routes/user';
 
 export class App {
   private readonly app: Application;
@@ -25,7 +26,9 @@ export class App {
 
   private initializeRoutes(): void {
     const studentRoutes = new StudentRoutes();
+    const userRoutes = new UserRoutes();
     this.app.use('/api/students', studentRoutes.router);
+    this.app.use('/api/users', userRoutes.router);
   }
 
   private initalizedErrorHandling(): void {
@@ -38,7 +41,7 @@ export class App {
       this.app.listen(this.port, () => {
         console.log(`Server running at http://localhost:${this.port}`);
         console.log(
-          `Students API available at http://localhost:${this.port}/api/students`,
+          `Students API available at http://localhost:${this.port}/api/students\nUser API available at http://localhost:${this.port}/api/user`,
         );
       });
     } catch (error) {

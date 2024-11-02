@@ -6,7 +6,7 @@ import {
   validateStudentUpdateData,
 } from '../middlewares/studentValidation';
 
-describe('Student Validation Middlewares', () => {
+describe('Student Validation Middleware', () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let mockNext: jest.MockedFunction<NextFunction>;

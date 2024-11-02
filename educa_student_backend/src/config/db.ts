@@ -1,6 +1,7 @@
 import { join } from 'path';
 import { DataSource } from 'typeorm';
 import { Student } from '../models/student';
+import { User } from '../models/user';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -11,7 +12,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME ?? 'postgres',
   synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.NODE_ENV === 'development',
-  entities: [Student],
+  entities: [Student, User],
   migrations: [join(__dirname, '..', 'migrations', '*.{ts,js}')],
 });
 
