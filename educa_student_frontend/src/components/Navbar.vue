@@ -1,31 +1,55 @@
 <template>
-  <v-app-bar flat class="border-b">
-    <v-app-bar-title class="pl-10">
-      LOGO
-    </v-app-bar-title>
-    <v-spacer></v-spacer>
-    <v-avatar
-      class="mr-4 cursor-pointer"
-      @click="showDialog = true"
-    >
-      <v-img
-        alt="John"
-        src="https://cdn.vuetifyjs.com/images/john.jpg"
-      ></v-img>
-    </v-avatar>
-    <login-popup v-model="showDialog" />
+  <v-app-bar class="ps-4 border-b" flat>
+    <v-app-bar-nav-icon
+      v-if="$vuetify.display.mdAndDown"
+      @click="onToggleDrawer"
+    />
+    <v-app-bar-title class="ml-7">LOGO</v-app-bar-title>
+    <template #append>
+      <v-btn class="text-none me-2" height="48" icon slim>
+        <v-avatar
+          color="surface-light"
+          image="https://cdn.vuetifyjs.com/images/john.png"
+          size="32"
+        />
+        <v-menu activator="parent">
+          <v-list density="compact" nav>
+            <v-list-item
+              :append-icon="logged ? 'mdi-logout' : 'mdi-login'"
+              link
+              :title="logged ? 'Logout' : 'Login'"
+              @click="handleAuthAction"
+            />
+          </v-list>
+        </v-menu>
+      </v-btn>
+    </template>
   </v-app-bar>
 </template>
 
-<script>
-import LoginPopup from './LoginPopup.vue'
+<script setup>
+import { useRouter } from 'vue-router';
 
-export default {
-  components: {
-    LoginPopup
+const router = useRouter();
+const props = defineProps({
+  logged: {
+    type: Boolean,
+    required: true,
   },
-  data: () => ({
-    showDialog: false
-  })
-}
+  toggleDrawer: {
+    type: Function,
+    required: true,
+  },
+});
+
+const onToggleDrawer = () => {
+  props.toggleDrawer();
+};
+
+const handleAuthAction = () => {
+  if (!props.logged) {
+    router.push('/login');
+  }
+  console.log('User logged out!');
+};
 </script>

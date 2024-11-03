@@ -1,47 +1,66 @@
 <template>
-  <v-container class="d-none d-md-flex justify-center align-center bg-grey-darken-3">
-    <p class="text-h7 text-center">Modulo academico</p>
-  </v-container>
-  <v-list
-  class="d-flex ga-5 flex-column pt-5">
-    <v-list-item
-    v-for="(option, index ) in options"
-    :key="index"
-    :class="['sidebar-options', {active: isActive(option)}]"
-    @click="navigateTo(option)"
-    class="sidebar-options d-flex flex-column rounded-s-lg">
-    <v-list-item-content class="sidebar-option d-flex align-center px-3 py-4 cursor-pointer ga-4 ">
-      <v-icon icon="$vuetify"></v-icon> <p class="text-caption d-md-block d-none">
-        {{ option.title }}
-      </p>
-    </v-list-item-content>
-  </v-list-item>
-</v-list>
+  <v-navigation-drawer v-model="localDrawer">
+    <v-container
+      class="d-none d-md-flex justify-center align-center bg-grey-darken-3"
+    >
+      <p class="text-h7 text-center">Módulo Acadêmico</p>
+    </v-container>
+    <v-list
+      density="compact"
+      nav
+      class="d-flex flex-column justify-center ga-3"
+    >
+      <v-list-item
+        class=""
+        v-for="item in items"
+        :key="item.title"
+        :class="['sidebar-options', { active: isActive(item) }]"
+        @click="navigateTo(item)"
+        :prepend-icon="item.prependIcon"
+        :title="$vuetify.display.mdAndUp ? item.title : ''"
+        link
+      />
+    </v-list>
+  </v-navigation-drawer>
 </template>
 
-<script>
-export default{
-  data(){
-    return{
-      options: [
-        { title: 'Alunos' , route: '/studentList'},
-        { title: 'Cadastro de alunos', route:'/studentForm' },
-      ],
-      activeOption: null,
-    }
-  },
+<script setup>
+import { computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+const router = useRouter();
+const route = useRoute();
 
-  methods:{
-    navigateTo(option){
-      this.$router.push(option.route)
-      this.setActive(option)
-    },
-    setActive(option){
-      this.activeOption = option;
-    },
-    isActive(option){
-      return this.activeOption === option
-}
-  }
-}
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true,
+  },
+  items: {
+    type: Array,
+    required: true,
+  },
+});
+
+const emit = defineEmits(['update:modelValue']);
+
+const localDrawer = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value),
+});
+
+const navigateTo = (item) => {
+  router.push(item.route);
+};
+
+const isActive = (item) => {
+  return route.path === item.route;
+};
 </script>
+
+<style>
+.sidebar-options.active {
+  background-color: #e0e0e0 !important;
+  border-color: tomato !important;
+  color: #333 !important;
+}
+</style>

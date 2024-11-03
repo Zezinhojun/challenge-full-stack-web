@@ -5,28 +5,15 @@
       @update:model-value="$emit('update:modelValue', $event)"
       max-width="600"
     >
-      <v-card
-        prepend-icon="mdi-account"
-        title="User Profile"
-      >
+      <v-card>
         <v-card-text>
           <v-row dense>
-            <v-col
-              cols="12"
-              md="4"
-              sm="6"
-            >
-              <v-text-field
-                label="First name*"
-                required
-              ></v-text-field>
+            <v-col cols="12" md="4" sm="6">
+              <v-sheet>
+                <v-text-field label="First name*" required></v-text-field>
+              </v-sheet>
             </v-col>
-
-            <!-- ... resto dos campos ... -->
-
           </v-row>
-
-          <small class="text-caption text-medium-emphasis">*indicates required field</small>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -58,9 +45,9 @@ export default {
   props: {
     modelValue: {
       type: Boolean,
-      required: true
-    }
+      required: true,
+    },
   },
-  emits: ['update:modelValue']
-}
+  emits: ['update:modelValue'],
+};
 </script>
