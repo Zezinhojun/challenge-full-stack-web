@@ -3,7 +3,7 @@
     <v-container
       class="d-none d-md-flex justify-center align-center bg-grey-darken-3"
     >
-      <p class="text-h7 text-center">Módulo Acadêmico</p>
+      <p class="text-h7 text-center">Academic Module</p>
     </v-container>
     <v-list
       density="compact"
@@ -17,7 +17,7 @@
         :class="['sidebar-options', { active: isActive(item) }]"
         @click="navigateTo(item)"
         :prepend-icon="item.prependIcon"
-        :title="$vuetify.display.mdAndUp ? item.title : ''"
+        :title="item.title"
         link
       />
     </v-list>
@@ -29,6 +29,7 @@ import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
+const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps({
   modelValue: {
@@ -40,8 +41,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-const emit = defineEmits(['update:modelValue']);
 
 const localDrawer = computed({
   get: () => props.modelValue,

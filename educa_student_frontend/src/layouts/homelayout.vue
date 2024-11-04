@@ -3,8 +3,13 @@
     <Navbar :logged="logged" :toggleDrawer="toggleDrawer" />
     <Sidebar :items="items" v-model="drawer" />
     <v-main>
-      <div class="pa-4">
-        <v-sheet border="dashed md" height="500" rounded="lg" width="100%">
+      <div class="pa-1">
+        <v-sheet class="px-2 py-2 px-md-8 py-md-10" rounded="lg" width="100%">
+          <v-app-bar v-if="$vuetify.display.mdAndUp">
+            <v-app-bar-title flat density="compact" class="text-center">
+              {{ pageTitle }}
+            </v-app-bar-title>
+          </v-app-bar>
           <router-view />
         </v-sheet>
       </div>
@@ -15,8 +20,15 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
 import Sidebar from '@/components/SideBar.vue';
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
+import { useRoute } from 'vue-router';
 
+const route = useRoute();
+const pageTitle = ref('');
+
+watchEffect(() => {
+  pageTitle.value = route.meta.title || 'Default title';
+});
 const drawer = ref(true);
 const logged = false;
 const items = ref([
@@ -36,3 +48,15 @@ const toggleDrawer = () => {
   drawer.value = !drawer.value;
 };
 </script>
+
+<style>
+.v-main .v-sheet {
+  height: 85.9vh;
+}
+
+@media (max-width: 795px) {
+  .v-main .v-sheet {
+    height: 87vh;
+  }
+}
+</style>

@@ -14,11 +14,13 @@ const routes: Array<RouteRecordRaw> = [
         path: 'studentlist',
         name: 'StudentList',
         component: () => import('@/pages/studentList.vue'),
+        meta: { title: 'Consult Student' },
       },
       {
         path: 'studentform',
         name: 'StudentForm',
         component: () => import('@/pages/studentForm.vue'),
+        meta: { title: 'Student Registration' },
       },
     ],
   },
