@@ -1,7 +1,11 @@
 <template>
   <div>
-    <div class="d-flex align-center ga-3 mb-5">
+    <div
+      class="d-flex flex-column text-center flex-md-row justify-space-around align-center mb-6 ga-3"
+      :class="{ 'my-6': students.length === 0 }"
+    >
       <v-text-field
+        v-if="students.length > 0"
         v-model="search"
         append-icon="mdi-magnify"
         label="Pesquisar"
@@ -9,6 +13,9 @@
         hide-details
       >
       </v-text-field>
+      <h1 class="text-h5" v-if="students.length === 0">
+        There are no registered users
+      </h1>
       <v-btn
         elevated
         color="grey-darken-2"
@@ -17,7 +24,9 @@
         >Student registration</v-btn
       >
     </div>
+
     <v-data-table
+      v-if="students.length > 0"
       v-model:sort-by="sortBy"
       :headers="headers"
       :items="students"
@@ -212,9 +221,10 @@ export default {
 .custom-table {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  height: 100%;
+  height: auto;
+  max-height: 70vh;
 }
-
+/*
 @media (max-width: 750px) {
   .custom-table {
     height: 75vh;
@@ -237,7 +247,7 @@ export default {
   .custom-table {
     height: 75vh;
   }
-}
+} */
 .custom-table th {
   background-color: #424242;
 }

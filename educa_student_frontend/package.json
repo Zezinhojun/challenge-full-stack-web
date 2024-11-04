@@ -16,7 +16,8 @@
     "vee-validate": "^4.14.6",
     "vue": "^3.4.31",
     "vuetify": "^3.6.11",
-    "vuetify-project": "file:"
+    "vuetify-project": "file:",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@babel/types": "^7.24.7",

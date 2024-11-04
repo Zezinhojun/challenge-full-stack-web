@@ -44,42 +44,36 @@
 import { useField, useForm } from 'vee-validate';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import * as yup from 'yup';
 
 const router = useRouter();
-
 const userData = ref(null);
 
-const { handleSubmit, handleReset: resetForm } = useForm({
-  validationSchema: {
-    name(value) {
-      if (!value) return 'Name is required';
-      if (value.length > 255) return 'Name cannot exceed 255 characters.';
-      if (value.length < 2) return 'Name needs to be at least 2 characters.';
-      return true;
-    },
-    email(value) {
-      if (!value) return 'Email is required';
-      if (value.length > 255) return 'Email cannot exceed 255 characters.';
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) return 'Must be a valid e-mail.';
-      return true;
-    },
-    ra(value) {
-      if (!value) return 'RA is required';
-      const raRegex = /^[0-9-]{6,20}$/;
-      if (!raRegex.test(value)) return 'RA must contain at least 6 digits.';
-      return true;
-    },
-
-    cpf(value) {
-      if (!value) return 'CPF is required';
-      const cpfRegex = /^\d{11}$/;
-      if (!cpfRegex.test(value))
-        return 'CPF must contain exactly 11 numeric digits.';
-      return true;
-    },
-  },
+const validationSchema = yup.object({
+  name: yup
+    .string()
+    .required('Name is required')
+    .min(2, 'Name needs to be at least 2 characters.')
+    .max(255, 'Name cannot exceed 255 characters.'),
+  email: yup
+    .string()
+    .required('Email is required')
+    .max(255, 'Email cannot exceed 255 characters.')
+    .email('Must be a valid e-mail.'),
+  ra: yup
+    .string()
+    .required('RA is required')
+    .matches(/^[0-9-]{6,20}$/, 'RA must contain at least 6 digits.'),
+  cpf: yup
+    .string()
+    .required('CPF is required')
+    .matches(/^\d{11}$/, 'CPF must contain exactly 11 numeric digits.'),
 });
+
+const { handleSubmit, handleReset: resetForm } = useForm({
+  validationSchema,
+});
+
 const name = useField('name');
 const email = useField('email');
 const ra = useField('ra');

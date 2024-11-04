@@ -32,6 +32,7 @@
 </template>
 
 <script setup>
+import { nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -53,9 +54,12 @@ const onToggleDrawer = () => {
   props.toggleDrawer();
 };
 
-const handleAuthAction = () => {
+const handleAuthAction = async () => {
   if (!props.logged) {
-    router.push('/login');
+    await nextTick();
+    setTimeout(() => {
+      router.push('/login');
+    }, 0);
   }
   console.log('User logged out!');
 };
