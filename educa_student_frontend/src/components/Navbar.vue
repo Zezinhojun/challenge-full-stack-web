@@ -4,7 +4,11 @@
       v-if="$vuetify.display.mdAndDown"
       @click="onToggleDrawer"
     />
-    <v-app-bar-title class="ml-7">LOGO</v-app-bar-title>
+    <div class="border cursor-pointer" style="width: 110px; cursor: pointer">
+      <v-app-bar-title class="ml-7" @click="navigateToHome()"
+        >LOGO</v-app-bar-title
+      >
+    </div>
     <template #append>
       <v-btn class="text-none me-2" height="48" icon slim>
         <v-avatar
@@ -31,6 +35,9 @@
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const navigateToHome = () => {
+  router.push('/');
+};
 const props = defineProps({
   logged: {
     type: Boolean,

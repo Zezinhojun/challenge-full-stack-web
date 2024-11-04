@@ -4,7 +4,11 @@
     <Sidebar :items="items" v-model="drawer" />
     <v-main>
       <div class="pa-1">
-        <v-sheet class="px-2 py-2 px-md-8 py-md-10" rounded="lg" width="100%">
+        <v-sheet
+          class="px-2 py-2 px-md-8 py-md-10 h-auto"
+          rounded="lg"
+          width="100%"
+        >
           <v-app-bar v-if="$vuetify.display.mdAndUp">
             <v-app-bar-title flat density="compact" class="text-center">
               {{ pageTitle }}
@@ -27,7 +31,7 @@ const route = useRoute();
 const pageTitle = ref('');
 
 watchEffect(() => {
-  pageTitle.value = route.meta.title || 'Default title';
+  pageTitle.value = route.meta.title;
 });
 const drawer = ref(true);
 const logged = false;
@@ -50,13 +54,11 @@ const toggleDrawer = () => {
 </script>
 
 <style>
-.v-main .v-sheet {
-  height: 85.9vh;
+.v-main {
+  height: 100vh;
 }
 
-@media (max-width: 795px) {
-  .v-main .v-sheet {
-    height: 87vh;
-  }
+.v-main .v-sheet {
+  background-color: transparent !important;
 }
 </style>

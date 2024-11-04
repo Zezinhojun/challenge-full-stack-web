@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="d-flex align-center ga-3">
+    <div class="d-flex align-center ga-3 mb-5">
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -212,12 +212,30 @@ export default {
 .custom-table {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  height: 650px;
+  height: 100%;
 }
 
 @media (max-width: 750px) {
   .custom-table {
-    height: 70vh;
+    height: 75vh;
+  }
+}
+
+@media ((max-width: 425px) and (max-height: 832px)) {
+  .custom-table {
+    height: 80vh;
+  }
+}
+
+@media ((max-width: 1024px) and (max-height: 832px)) {
+  .custom-table {
+    height: 68vh;
+  }
+}
+
+@media ((max-width: 1440px) and (max-height: 832px)) {
+  .custom-table {
+    height: 75vh;
   }
 }
 .custom-table th {
