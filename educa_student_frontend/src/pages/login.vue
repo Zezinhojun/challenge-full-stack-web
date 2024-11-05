@@ -3,65 +3,20 @@
     <v-container
       class="d-flex justify-center flex-column align-center h-screen"
     >
-      <v-card
-        class="border pa-7"
-        elevation="8"
-        rounded="lg"
-        width="300px"
-        :height="isLoginMode ? '400px' : '470px'"
-      >
-        <v-card-title class="text-center text-h5">
-          {{ isLoginMode ? 'Sign in' : 'Sign Up' }}
-        </v-card-title>
+      <LoginCard :is-login-mode="isLoginMode">
+        <template #title>
+          <v-card-title class="text-center text-h5">
+            {{ isLoginMode ? 'Sign in' : 'Sign Up' }}
+          </v-card-title>
+        </template>
 
-        <VeeForm @submit="submit">
-          <v-text-field
-            v-show="!isLoginMode"
-            v-model="name.value.value"
-            :error-messages="name.errorMessage.value"
-            label="Name"
-            maxlength="255"
-          />
-          <v-text-field
-            v-model="email.value.value"
-            :error-messages="email.errorMessage.value"
-            label="E-mail"
-          />
-          <v-text-field
-            v-model="password.value.value"
-            :error-messages="password.errorMessage.value"
-            type="password"
-            label="Password"
-            maxlength="255"
-          />
-          <v-btn
-            type="submit"
-            class="mb-4"
-            color="blue"
-            size="large"
-            variant="tonal"
-            block
-            @click="submit"
-          >
-            {{ isLoginMode ? 'Sign in' : 'Sign up' }}
-          </v-btn>
-        </VeeForm>
-
-        <div>
-          <p class="text-caption">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi,
-            molestiae eligendi
-          </p>
-        </div>
-        <div>
-          <p class="text-caption">
-            Create a new account?
-            <strong @click="toggledMode" class="text-primary cursor-pointer">
-              Click here
-            </strong>
-          </p>
-        </div>
-      </v-card>
+        <template #form>
+          <LoginForm :is-login-mode="isLoginMode" @submit="submit" />
+        </template>
+        <template #footer>
+          <LoginFooter @toggle="toggledMode" />
+        </template>
+      </LoginCard>
       <Snackbar
         :message="snackbar.message"
         :type="snackbar.type"
@@ -72,13 +27,14 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
-import { useField, useForm } from 'vee-validate';
-import * as yup from 'yup';
+import { ref } from 'vue';
 import axios from 'axios';
 import Snackbar from '@/components/Snackbar.vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+import LoginCard from '@/components/Login/LoginCard.vue';
+import LoginFooter from '@/components/Login/LoginFooter.vue';
+import LoginForm from '@/components/Login/LoginForm.vue';
 
 //reactive state
 const isLoginMode = ref(true);
@@ -90,61 +46,19 @@ const snackbar = ref({
   type: 'success',
 });
 
-//validation schema
-const validationSchema = computed(() => ({
-  ...(isLoginMode.value
-    ? {}
-    : {
-        name: yup
-          .string()
-          .required('Name is required')
-          .min(2, 'Name needs to be at least 2 characters.')
-          .max(255, 'Name cannot exceed 255 characters.'),
-      }),
-  email: yup
-    .string()
-    .required('Email is required')
-    .max(255, 'Email cannot exceed 255 characters.')
-    .email('Must be a valid e-mail.'),
-  password: yup
-    .string()
-    .required('Password is required')
-    .min(2, 'Password needs to be at least 2 characters.'),
-}));
-
-//form handling
-const { handleSubmit } = useForm({
-  validationSchema,
-});
-const name = useField('name', undefined, { initialValue: '' });
-const email = useField('email', undefined, { initialValue: '' });
-const password = useField('password', undefined, { initialValue: '' });
-
-//snackbar handling
 const showSnackbar = (message, type = 'success') => {
   snackbar.value.message = message;
   snackbar.value.type = type;
   snackbar.value.show = true;
 };
 
-//form submission
-const submit = handleSubmit((values) => {
-  if (isLoginMode.value) {
-    signIn(values);
-  } else {
-    signUp(values);
-  }
-});
+const submit = (values) => {
+  isLoginMode.value ? signIn(values) : signUp(values);
+};
 
 const toggledMode = () => {
   isLoginMode.value = !isLoginMode.value;
 };
-
-watch(isLoginMode, (newValue) => {
-  if (newValue) {
-    name.value.value = '';
-  }
-});
 
 const signIn = async (values) => {
   try {
@@ -177,6 +91,7 @@ const signUp = async (values) => {
       email: values.email,
       password: values.password,
     });
+    isLoginMode.value = !isLoginMode.value;
     showSnackbar('Account created successfully!', 'success');
   } catch (error) {
     console.error('Registration error', error.response?.data || error.message);
