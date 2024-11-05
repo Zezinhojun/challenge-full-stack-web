@@ -83,6 +83,12 @@ The .env.example file is already configured in the repository, so you need to re
 mv .env.example .env
 ```
 
+Install the dependencies
+
+```bash
+npm install
+```
+
 Build and start Docker containers:
 
 ```bash
