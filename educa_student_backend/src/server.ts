@@ -6,6 +6,8 @@ import { connectDB } from './config/db';
 import { StudentRoutes } from './routes/student';
 import { errorHandler } from './middlewares/errorHandler';
 import { UserRoutes } from './routes/user';
+import { swaggerSpec } from '../swagger';
+import swaggerUi from 'swagger-ui-express';
 
 export class App {
   private readonly app: Application;
@@ -29,6 +31,7 @@ export class App {
     const userRoutes = new UserRoutes();
     this.app.use('/api/students', studentRoutes.router);
     this.app.use('/api/users', userRoutes.router);
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   }
 
   private initalizedErrorHandling(): void {

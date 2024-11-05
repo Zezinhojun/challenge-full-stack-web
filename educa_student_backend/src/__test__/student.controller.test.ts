@@ -36,8 +36,8 @@ describe('StudentController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => { });
+    jest.spyOn(console, 'warn').mockImplementation(() => { });
 
     mockStudent = new Student();
     studentController = new StudentController();
@@ -220,6 +220,42 @@ describe('StudentController', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: 'Could not remove student',
       });
+    });
+  });
+  describe('populateWithFakeData', () => {
+    it('should populate with fake students successfully', async () => {
+      (mockStudent.addStudent as jest.Mock).mockImplementation(async (studentData) => studentData);
+
+      mockRequest = {};
+      mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await studentController.populateWithFakeData(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(201);
+    });
+
+    it('should handle error when populating students fails', async () => {
+      (mockStudent.addStudent as jest.Mock).mockRejectedValue(new Error('Failed to add student'));
+
+      mockRequest = {};
+      mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      await studentController.populateWithFakeData(
+        mockRequest as Request,
+        mockResponse as Response,
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Could not populate students' });
     });
   });
 });

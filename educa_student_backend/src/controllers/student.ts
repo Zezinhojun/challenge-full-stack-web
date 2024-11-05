@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import type { IStudent } from '../models/student';
 import { Student } from '../models/student';
+import { faker } from '@faker-js/faker';
 
 export class StudentController {
   private readonly studentModel: Student;
@@ -92,6 +93,25 @@ export class StudentController {
     } catch (error) {
       console.error('Error removing student:', error);
       return res.status(500).json({ message: 'Could not remove student' });
+    }
+  }
+
+  async populateWithFakeData(req: Request, res: Response): Promise<Response> {
+    const fakeStudents = Array.from({ length: 10 }).map(() => ({
+      name: faker.internet.username(),
+      email: faker.internet.email(),
+      ra: faker.number.int({ min: 1000000, max: 9999999 }).toString(),
+      cpf: faker.number.int({ min: 10000000000, max: 99999999999 }).toString(),
+    }));
+
+    try {
+      const createdStudents = await Promise.all(
+        fakeStudents.map(async studentData => await this.studentModel.addStudent(studentData))
+      );
+      return res.status(201).json(createdStudents);
+    } catch (error) {
+      console.error('Error populating students:', error);
+      return res.status(500).json({ message: 'Could not populate students' });
     }
   }
 }

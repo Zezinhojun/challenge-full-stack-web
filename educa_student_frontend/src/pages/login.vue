@@ -36,7 +36,6 @@ import LoginCard from '@/components/Login/LoginCard.vue';
 import LoginFooter from '@/components/Login/LoginFooter.vue';
 import LoginForm from '@/components/Login/LoginForm.vue';
 
-//reactive state
 const isLoginMode = ref(true);
 const router = useRouter();
 const store = useStore();

@@ -5,9 +5,10 @@
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "include": ["src/**/*", "jest.config.ts"],
+  "include": ["src/**/*", "jest.config.ts", "swagger.ts"],
   "exclude": ["node_modules"]
 }

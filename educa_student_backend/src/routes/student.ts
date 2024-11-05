@@ -28,6 +28,8 @@ export class StudentRoutes {
       this.updateHandler,
     );
     this.router.delete('/:id', validateId, this.removeHandler);
+    this.router.post('/populate', this.populateWithFakeDataHandler);
+
   }
 
   readonly createHandler = async (
@@ -85,6 +87,18 @@ export class StudentRoutes {
   ): Promise<void> => {
     try {
       await this.studentController.remove(req, res);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  readonly populateWithFakeDataHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      await this.studentController.populateWithFakeData(req, res);
     } catch (error) {
       next(error);
     }
