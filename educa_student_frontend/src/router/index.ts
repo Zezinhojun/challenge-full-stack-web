@@ -13,6 +13,10 @@ const routes: Array<RouteRecordRaw> = [
     meta: { requiresAuth: true },
     children: [
       {
+        path: '',
+        redirect: 'studentlist',
+      },
+      {
         path: 'studentlist',
         name: 'StudentList',
         component: () => import('@/pages/studentList.vue'),

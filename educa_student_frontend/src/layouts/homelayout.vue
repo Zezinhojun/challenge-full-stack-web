@@ -1,5 +1,11 @@
 <template>
   <v-layout>
+    <Snackbar
+      v-model:show="snackbarVisible"
+      :message="snackbarMessage"
+      :type="snackbarType"
+      :timeout="3000"
+    />
     <Navbar :logged="logged" :toggleDrawer="toggleDrawer" />
     <Sidebar :items="items" v-model="drawer" />
     <v-main>
@@ -24,7 +30,8 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue';
 import Sidebar from '@/components/SideBar.vue';
-import { ref, watchEffect } from 'vue';
+import Snackbar from '@/components/Snackbar.vue';
+import { provide, ref, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -51,6 +58,18 @@ const items = ref([
 const toggleDrawer = () => {
   drawer.value = !drawer.value;
 };
+
+const snackbarMessage = ref('');
+const snackbarType = ref('success');
+const snackbarVisible = ref(false);
+
+const showSnackbar = (message, type = 'success') => {
+  snackbarMessage.value = message;
+  snackbarType.value = type;
+  snackbarVisible.value = true;
+};
+
+provide('showSnackbar', showSnackbar);
 </script>
 
 <style>

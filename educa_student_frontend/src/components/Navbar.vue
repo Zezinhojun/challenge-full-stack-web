@@ -34,10 +34,12 @@
 </template>
 
 <script setup>
+import { inject } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 const router = useRouter();
 const store = useStore();
+const showSnackbar = inject('showSnackbar');
 const navigateToHome = () => {
   router.push('/');
 };
@@ -59,7 +61,10 @@ const onToggleDrawer = () => {
 const handleAuthAction = async () => {
   if (!props.logged) {
     store.commit('CLEAR_AUTH_DATA');
-    router.push('/login');
+    showSnackbar('Is logged with successfully', 'success');
+    setTimeout(() => {
+      router.push('/login');
+    }, 1000);
   }
 };
 </script>

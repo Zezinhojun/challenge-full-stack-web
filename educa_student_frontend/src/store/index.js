@@ -52,6 +52,19 @@ export default createStore({
     REMOVE_STUDENT(state, data) {
       state.students = state.students.filter((student) => student.id !== data);
     },
+
+    ADD_STUDENT(state, data) {
+      state.students.push(data);
+    },
+    UPDATE_STUDENT(state, data) {
+      const index = state.students.findIndex(
+        (student) => student.id === data.id,
+      );
+
+      if (index !== -1) {
+        state.students.splice(index, 1, data);
+      }
+    },
   },
   actions: {
     async loginUser({ commit }, loginData) {
@@ -124,6 +137,38 @@ export default createStore({
       } catch (error) {
         console.error('Error removing student:', error);
         throw error;
+      }
+    },
+
+    // eslint-disable-next-line no-unused-vars
+    async fetchStudentById({ _commit }, studentId) {
+      try {
+        const response = await axios.get(`students/${studentId}`);
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching student by ID:', error);
+        return null;
+      }
+    },
+
+    async createStudent({ commit }, studentData) {
+      try {
+        const response = await axios.post('/students', studentData);
+        commit('ADD_STUDENT', response.data);
+        return response.data;
+      } catch (error) {
+        console.error('Error creating user:', error);
+        return null;
+      }
+    },
+    async updateStudent({ commit }, { studentId, updatedData }) {
+      try {
+        const response = await axios.put(`/students/${studentId}`, updatedData);
+        commit('UPDATE_STUDENT', response.data);
+        return response.data;
+      } catch (error) {
+        console.error('Error updating user:', error);
+        return null;
       }
     },
   },
