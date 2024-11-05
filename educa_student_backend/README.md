@@ -102,7 +102,7 @@ The API will be available at:
 
 ### Running the Frontend
 
-Instructions for starting the frontend.
+Instructions for starting the frontend [README frontend](../educa_student_frontend/README.md)
 
 ### API Documentation
 
