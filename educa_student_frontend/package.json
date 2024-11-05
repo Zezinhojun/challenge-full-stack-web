@@ -2,27 +2,30 @@
   "name": "vuetify-project",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
-    "format": "prettier --write ."
+    "dev": "vite",
+    "format": "prettier --write .",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@mdi/font": "7.4.47",
     "@mdi/js": "^7.4.47",
+    "axios": "^1.7.7",
     "core-js": "^3.37.1",
     "roboto-fontface": "*",
     "vee-validate": "^4.14.6",
     "vue": "^3.4.31",
     "vuetify": "^3.6.11",
     "vuetify-project": "file:",
+    "vuex": "^4.0.0",
     "yup": "^1.4.0"
   },
   "devDependencies": {
     "@babel/types": "^7.24.7",
     "@types/node": "^20.14.10",
     "@vitejs/plugin-vue": "^5.0.5",
+    "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/eslint-config-typescript": "^13.0.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",

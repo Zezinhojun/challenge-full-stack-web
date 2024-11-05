@@ -1,8 +1,5 @@
 <template>
-  <v-form
-    @submit.prevent="submit"
-    class="mt-10 d-flex flex-column justify-center"
-  >
+  <v-form @submit="submit" class="mt-10 d-flex flex-column justify-center">
     <v-text-field
       v-model="name.value.value"
       :error-messages="name.errorMessage.value"
@@ -46,8 +43,8 @@ import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import * as yup from 'yup';
 
-const router = useRouter();
 const userData = ref(null);
+const router = useRouter();
 
 const validationSchema = yup.object({
   name: yup

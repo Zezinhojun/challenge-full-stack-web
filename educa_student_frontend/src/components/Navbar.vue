@@ -19,9 +19,11 @@
         <v-menu activator="parent">
           <v-list density="compact" nav>
             <v-list-item
-              :append-icon="logged ? 'mdi-logout' : 'mdi-login'"
+              :append-icon="
+                store.getters.isAuthenticated ? 'mdi-logout' : 'mdi-login'
+              "
               link
-              :title="logged ? 'Logout' : 'Login'"
+              :title="store.getters.isAuthenticated ? 'Logout' : 'Login'"
               @click="handleAuthAction"
             />
           </v-list>
@@ -32,10 +34,10 @@
 </template>
 
 <script setup>
-import { nextTick } from 'vue';
 import { useRouter } from 'vue-router';
-
+import { useStore } from 'vuex';
 const router = useRouter();
+const store = useStore();
 const navigateToHome = () => {
   router.push('/');
 };
@@ -56,11 +58,8 @@ const onToggleDrawer = () => {
 
 const handleAuthAction = async () => {
   if (!props.logged) {
-    await nextTick();
-    setTimeout(() => {
-      router.push('/login');
-    }, 0);
+    store.commit('CLEAR_AUTH_DATA');
+    router.push('/login');
   }
-  console.log('User logged out!');
 };
 </script>

@@ -62,6 +62,11 @@
           </p>
         </div>
       </v-card>
+      <Snackbar
+        :message="snackbar.message"
+        :type="snackbar.type"
+        v-model:show="snackbar.show"
+      />
     </v-container>
   </div>
 </template>
@@ -70,12 +75,22 @@
 import { computed, ref, watch } from 'vue';
 import { useField, useForm } from 'vee-validate';
 import * as yup from 'yup';
+import axios from 'axios';
+import Snackbar from '@/components/Snackbar.vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
-const isLoginMode = ref(false);
-const name = useField('name', undefined, { initialValue: '' });
-const email = useField('email', undefined, { initialValue: '' });
-const password = useField('password', undefined, { initialValue: '' });
+//reactive state
+const isLoginMode = ref(true);
+const router = useRouter();
+const store = useStore();
+const snackbar = ref({
+  show: false,
+  message: '',
+  type: 'success',
+});
 
+//validation schema
 const validationSchema = computed(() => ({
   ...(isLoginMode.value
     ? {}
@@ -97,19 +112,28 @@ const validationSchema = computed(() => ({
     .min(2, 'Password needs to be at least 2 characters.'),
 }));
 
+//form handling
 const { handleSubmit } = useForm({
   validationSchema,
 });
+const name = useField('name', undefined, { initialValue: '' });
+const email = useField('email', undefined, { initialValue: '' });
+const password = useField('password', undefined, { initialValue: '' });
 
+//snackbar handling
+const showSnackbar = (message, type = 'success') => {
+  snackbar.value.message = message;
+  snackbar.value.type = type;
+  snackbar.value.show = true;
+};
+
+//form submission
 const submit = handleSubmit((values) => {
-  const payloadLogin = {
-    email: values.email,
-    password: values.password,
-  };
-  if (!isLoginMode.value) {
-    return console.log(values);
+  if (isLoginMode.value) {
+    signIn(values);
+  } else {
+    signUp(values);
   }
-  console.log(payloadLogin);
 });
 
 const toggledMode = () => {
@@ -121,4 +145,42 @@ watch(isLoginMode, (newValue) => {
     name.value.value = '';
   }
 });
+
+const signIn = async (values) => {
+  try {
+    const response = await axios.post('users/login', {
+      email: values.email,
+      password: values.password,
+    });
+
+    store.commit('SET_AUTH_DATA', {
+      token: response.data.token,
+      user: {
+        email: response.data.user.email,
+        id: response.data.user.id,
+      },
+    });
+    showSnackbar('Login successful!', 'success');
+    setTimeout(() => {
+      router.push('/studentlist');
+    }, 1000);
+  } catch (error) {
+    console.error('Login error:', error.response?.data || error.message);
+    showSnackbar('Login error. Please check your credentials.', 'error');
+  }
+};
+
+const signUp = async (values) => {
+  try {
+    await axios.post('users/register', {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    });
+    showSnackbar('Account created successfully!', 'success');
+  } catch (error) {
+    console.error('Registration error', error.response?.data || error.message);
+    showSnackbar('Error creating account. Please try again.', 'error');
+  }
+};
 </script>
