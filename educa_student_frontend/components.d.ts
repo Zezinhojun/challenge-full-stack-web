@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ConfirmationDialog: typeof import('./src/components/ConfirmationDialog.vue')['default']
     LoginCard: typeof import('./src/components/Login/LoginCard.vue')['default']
     LoginFooter: typeof import('./src/components/Login/LoginFooter.vue')['default']
     LoginForm: typeof import('./src/components/Login/LoginForm.vue')['default']
@@ -15,5 +16,8 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SideBar: typeof import('./src/components/SideBar.vue')['default']
     Snackbar: typeof import('./src/components/Snackbar.vue')['default']
+    StudentHeader: typeof import('./src/components/StudentList/StudentHeader.vue')['default']
+    StudentListHeader: typeof import('./src/components/StudentList/StudentListHeader.vue')['default']
+    StudentListTable: typeof import('./src/components/StudentList/StudentListTable.vue')['default']
   }
 }

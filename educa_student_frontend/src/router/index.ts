@@ -30,6 +30,15 @@ const routes: Array<RouteRecordRaw> = [
           requiresAuth: true,
         },
       },
+      {
+        path: 'studentform/:id',
+        name: 'EditStudentForm',
+        component: () => import('@/pages/studentForm.vue'),
+        meta: {
+          title: 'Edit Student',
+          requiresAuth: true,
+        },
+      },
     ],
   },
   {
@@ -51,6 +60,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   const isLogged = store.getters.isAuthenticated;
+  const isLoadingStudents = store.getters.isLoadingStudents;
 
   if (to.meta.requiresAuth && !isLogged) {
     next('/login');
@@ -60,6 +70,11 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresGuest && isLogged) {
     next('/');
     return;
+  }
+  if (to.name === 'StudentList') {
+    if (!isLoadingStudents && store.getters.getStudents.length === 0) {
+      await store.dispatch('loadStudents');
+    }
   }
   next();
 });

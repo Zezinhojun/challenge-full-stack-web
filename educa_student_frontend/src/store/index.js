@@ -6,12 +6,17 @@ export default createStore({
     isLogged: false,
     token: '',
     user: null,
+    students: [],
+    loadingStudents: false,
   },
   getters: {
     isAuthenticated: (state) => state.isLogged,
     getUser: (state) => state.user,
     getToken: (state) => state.token,
+    getStudents: (state) => state.students,
+    isLoadingStudents: (state) => state.loadingStudents,
   },
+
   mutations: {
     SET_AUTH_DATA(state, { token, user }) {
       state.token = token;
@@ -36,6 +41,17 @@ export default createStore({
         state.isLogged = true;
       }
     },
+
+    SET_STUDENTS(state, data) {
+      state.students = data;
+    },
+    SET_LOADING_STUDENTS(state, data) {
+      state.isLoadingStudents = data;
+    },
+
+    REMOVE_STUDENT(state, data) {
+      state.students = state.students.filter((student) => student.id !== data);
+    },
   },
   actions: {
     async loginUser({ commit }, loginData) {
@@ -44,7 +60,7 @@ export default createStore({
         const data = response.data;
 
         if (!data.token || !data.user) {
-          throw new Error('Dados de resposta inválidos');
+          throw new Error('Invalid response data');
         }
 
         commit('SET_AUTH_DATA', {
@@ -60,10 +76,10 @@ export default createStore({
           user: data.user,
         };
       } catch (error) {
-        console.error('Erro no login:', error.response?.data || error.message);
+        console.error('Login error::', error.response?.data || error.message);
         return {
           success: false,
-          error: error.response?.data?.message || 'Erro no login',
+          error: error.response?.data?.message || 'Login error:',
         };
       }
     },
@@ -87,6 +103,28 @@ export default createStore({
         }
       }
       return false;
+    },
+
+    async loadStudents({ commit }) {
+      commit('SET_LOADING_STUDENTS', true);
+      try {
+        const response = await axios.get('/students');
+        commit('SET_STUDENTS', response.data);
+      } catch (error) {
+        console.error('Error loading students:', error);
+      } finally {
+        commit('SET_LOADING_STUDENTS', false);
+      }
+    },
+
+    async removeStudent({ commit }, studentId) {
+      try {
+        await axios.delete(`/students/${studentId}`);
+        commit('REMOVE_STUDENT', studentId);
+      } catch (error) {
+        console.error('Error removing student:', error);
+        throw error;
+      }
     },
   },
   modules: {},

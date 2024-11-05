@@ -1,30 +1,10 @@
 <template>
   <div>
-    <div
-      class="d-flex flex-column text-center flex-md-row justify-space-around align-center mb-6 ga-3"
-      :class="{ 'my-6': students.length === 0 }"
-    >
-      <v-text-field
-        v-if="students.length > 0"
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Pesquisar"
-        single-line
-        hide-details
-      >
-      </v-text-field>
-      <h1 class="text-h5" v-if="students.length === 0">
-        There are no registered users
-      </h1>
-      <v-btn
-        elevated
-        color="grey-darken-2"
-        :size="$vuetify.display.mdAndUp ? 'x-large' : 'small'"
-        @click="newStudent"
-        >Student registration</v-btn
-      >
-    </div>
-
+    <StudentListHeader
+      :students-count="students.length"
+      v-model:search="search"
+      @new-student="newStudent"
+    />
     <v-data-table
       v-if="students.length > 0"
       v-model:sort-by="sortBy"
@@ -42,7 +22,7 @@
                 size="x-small"
                 color="primary"
                 class="d-flex justify-center align-center"
-                @click="editItem(item.raw)"
+                @click="editItem(item.id)"
               >
                 <v-icon icon="mdi-pencil" class="" />
               </v-btn>
@@ -56,7 +36,7 @@
                 size="x-small"
                 color="error"
                 class="d-flex justify-center align-center"
-                @click="deleteItem(item)"
+                @click="confirmDelete(item.id)"
               >
                 <v-icon icon="mdi-delete" />
               </v-btn>
@@ -65,155 +45,76 @@
         </div>
       </template>
     </v-data-table>
+    <Snackbar
+      :message="snackbar.message"
+      :type="snackbar.type"
+      v-model:show="snackbar.show"
+    />
+    <ConfirmationDialog
+      v-model:visible="dialogVisible"
+      title="Confirm Deletion"
+      message="Are you sure you want to delete this student?"
+      @confirm="deleteItem(selectedStudentId)"
+      @cancel="dialogVisible = false"
+    />
   </div>
 </template>
-<script>
-import { mdiDelete, mdiPencil } from '@mdi/js';
-export default {
-  data() {
-    return {
-      mdiPencil,
-      mdiDelete,
-      search: '',
-      sortBy: [{ key: 'ra', order: 'asc' }],
-      headers: [
-        { title: 'Registro Academico', key: 'ra' },
-        { title: 'Nome', key: 'name' },
-        { title: 'CPF', key: 'cpf' },
-        { title: 'Ações', key: 'action' },
-      ],
-      students: [
-        {
-          ra: 20241001,
-          name: 'Valentina de Jesus',
-          cpf: 12345678901,
-          action: '',
-        },
-        {
-          ra: 20241002,
-          name: 'Lucas da Silva',
-          cpf: 23456789012,
-          action: '',
-        },
-        {
-          ra: 20241003,
-          name: 'Mariana Oliveira',
-          cpf: 34567890123,
-          action: '',
-        },
-        {
-          ra: 20241004,
-          name: 'Gabriel Santos',
-          cpf: 45678901234,
-          action: '',
-        },
-        {
-          ra: 20241005,
-          name: 'Sofia Almeida',
-          cpf: 56789012345,
-          action: '',
-        },
-        {
-          ra: 20241006,
-          name: 'Rafael Lima',
-          cpf: 67890123456,
-          action: '',
-        },
-        {
-          ra: 20241007,
-          name: 'Ana Clara Costa',
-          cpf: 78901234567,
-          action: '',
-        },
-        {
-          ra: 20241008,
-          name: 'Felipe Pereira',
-          cpf: 89012345678,
-          action: '',
-        },
-        {
-          ra: 20241009,
-          name: 'Isabella Martins',
-          cpf: 90123456789,
-          action: '',
-        },
-        {
-          ra: 20241010,
-          name: 'Gustavo Rodrigues',
-          cpf: 10123456789,
-          action: '',
-        },
-        {
-          ra: 20241011,
-          name: 'Lara Ferreira',
-          cpf: 11123456789,
-          action: '',
-        },
-        {
-          ra: 20241012,
-          name: 'Eduardo Ribeiro',
-          cpf: 12123456789,
-          action: '',
-        },
-        {
-          ra: 20241013,
-          name: 'Luiza Gomes',
-          cpf: 13123456789,
-          action: '',
-        },
-        {
-          ra: 20241014,
-          name: 'Thiago Nascimento',
-          cpf: 14123456789,
-          action: '',
-        },
-        {
-          ra: 20241015,
-          name: 'Júlia Rocha',
-          cpf: 15123456789,
-          action: '',
-        },
-        {
-          ra: 20241016,
-          name: 'Vitor Martins',
-          cpf: 16123456789,
-          action: '',
-        },
-        {
-          ra: 20241017,
-          name: 'Bianca Soares',
-          cpf: 17123456789,
-          action: '',
-        },
-        {
-          ra: 20241018,
-          name: 'Leonardo Alves',
-          cpf: 18123456789,
-          action: '',
-        },
-        {
-          ra: 20241019,
-          name: 'Amanda Lima',
-          cpf: 19123456789,
-          action: '',
-        },
-        {
-          ra: 20241020,
-          name: 'Felipe Souza',
-          cpf: 20123456789,
-          action: '',
-        },
-      ],
-    };
-  },
-  methods: {
-    deleteItem(item) {
-      console.log(item);
-    },
-    newStudent() {
-      this.$router.push('/studentForm');
-    },
-  },
+<script setup>
+import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
+import Snackbar from '@/components/Snackbar.vue';
+import StudentListHeader from '@/components/StudentList/StudentListHeader.vue';
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+
+const router = useRouter();
+const store = useStore();
+const search = ref('');
+const sortBy = ref([{ key: 'ra', order: 'asc' }]);
+const dialogVisible = ref(false);
+const selectedStudentId = ref(null);
+const snackbar = ref({
+  show: false,
+  message: '',
+  type: 'success',
+});
+
+const headers = [
+  { title: 'Registro Academico', key: 'ra' },
+  { title: 'Nome', key: 'name' },
+  { title: 'CPF', key: 'cpf' },
+  { title: 'Ações', key: 'action' },
+];
+const students = computed(() => store.getters.getStudents || []);
+
+const showSnackbar = (message, type = 'success') => {
+  snackbar.value.message = message;
+  snackbar.value.type = type;
+  snackbar.value.show = true;
+};
+
+const confirmDelete = (studentId) => {
+  selectedStudentId.value = studentId;
+  dialogVisible.value = true;
+};
+
+const deleteItem = async (studentId) => {
+  try {
+    await store.dispatch('removeStudent', studentId);
+    showSnackbar('Student removed successfully!', 'success');
+  } catch (error) {
+    console.error('Error removing student:', error);
+    showSnackbar('Failed to remove student. Please try again.', 'error');
+  } finally {
+    dialogVisible.value = false;
+  }
+};
+const editItem = (studentId) => {
+  router.push(`/studentForm/${studentId}`);
+};
+
+const newStudent = () => {
+  router.push('/studentForm');
 };
 </script>
 
@@ -224,30 +125,6 @@ export default {
   height: auto;
   max-height: 70vh;
 }
-/*
-@media (max-width: 750px) {
-  .custom-table {
-    height: 75vh;
-  }
-}
-
-@media ((max-width: 425px) and (max-height: 832px)) {
-  .custom-table {
-    height: 80vh;
-  }
-}
-
-@media ((max-width: 1024px) and (max-height: 832px)) {
-  .custom-table {
-    height: 68vh;
-  }
-}
-
-@media ((max-width: 1440px) and (max-height: 832px)) {
-  .custom-table {
-    height: 75vh;
-  }
-} */
 .custom-table th {
   background-color: #424242;
 }
