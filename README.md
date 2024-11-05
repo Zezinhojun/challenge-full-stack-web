@@ -12,8 +12,9 @@ Both parts work together to provide a comprehensive student management system.
 
 ## Quick Links
 
-- [Backend README](../educa_student_backend/README.md)
-- [Frontend README](../educa_student_frontend/README.md)
+- [Backend README](https://github.com/Zezinhojun/challenge-full-stack-web/blob/3fc8be64595efe057b30157a4d4aa0971b5655ac/educa_student_backend/README.md)
+- [Frontend README](https://github.com/Zezinhojun/challenge-full-stack-web/blob/3fc8be64595efe057b30157a4d4aa0971b5655ac/educa_student_frontend/README.md)
+
 
 ## Features
 
