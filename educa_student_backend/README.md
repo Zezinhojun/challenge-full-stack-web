@@ -59,11 +59,11 @@ Additionally, the project adopts good coding practices, such as:
 
 #### Prerequisites
 
-- Docker instalado
+- Docker installed
 
 #### Installation Instructions
 
-Clone o repositório do projeto:
+Clone the project repository:
 
 ```bash
 git clone https://github.com/Zezinhojun/educa.git
@@ -77,7 +77,11 @@ Navigate to the backend directory:
 cd educa/educa_student_backend
 ```
 
-The `.env.docker` file is already configured in the repository, so there is no need to create it manually.
+The .env.example file is already configured in the repository, so you need to rename it to .env:
+
+```bash
+mv .env.example .env
+```
 
 Build and start Docker containers:
 
